@@ -18,7 +18,7 @@ interface IpremiumCalculator {
 contract InsurancePolicy {
     IpremiumCalculator public Calculator;
     enum ClaimStatus {
-        Processed,
+        Processing,
         Accepted,
         Rejected
     }
@@ -39,6 +39,7 @@ contract InsurancePolicy {
         uint lastPaymentDate;
         uint terminationDate;
         string terminationReason;
+        ClaimStatus status;
     }
     struct Claim {
         uint256 policyId;
@@ -168,6 +169,7 @@ contract InsurancePolicy {
         string[] memory _image
     ) public {
         Claim storage newClaim = claims[_policyholder][_policyId];
+        Policy storage policy = policiess[_policyholder][_policyId];
 
         ClaimId++;
 
@@ -175,7 +177,8 @@ contract InsurancePolicy {
         newClaim.policyholder = _policyholder;
         newClaim.claimDetails = _claimDetails;
         newClaim.image = _image;
-        newClaim.status = ClaimStatus.Processed;
+        newClaim.status = ClaimStatus.Processing;
+        policy.status = ClaimStatus.Processing;
 
         Allclaims.push(newClaim);
     }
