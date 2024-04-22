@@ -184,7 +184,7 @@ contract InsurancePolicy {
         return Allclaims;
     }
 
-    //Testing Function
+    //Testing
     function AAgeneratePremium(string[] memory safetyFeatures) public {
         generatePremium(
             msg.sender,
