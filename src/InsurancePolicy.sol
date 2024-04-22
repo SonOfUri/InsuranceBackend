@@ -17,6 +17,11 @@ interface IpremiumCalculator {
 
 contract InsurancePolicy {
     IpremiumCalculator public Calculator;
+    enum ClaimStatus {
+        Processed,
+        Accepted,
+        Rejected
+    }
 
     constructor(address _calculator) {
         Calculator = IpremiumCalculator(_calculator);
@@ -35,6 +40,18 @@ contract InsurancePolicy {
         uint terminationDate;
         string terminationReason;
     }
+    struct Claim {
+        uint256 policyId;
+        address policyholder;
+        string claimDetails;
+        string[] image;
+        ClaimStatus status;
+    }
+    mapping(address => mapping(uint => Claim)) claims;
+
+    uint256 ClaimId;
+
+    Claim[] public Allclaims;
     mapping(address => uint) premiumsReceived;
     mapping(address => Policy) policies;
     mapping(address => uint) userpremium;
@@ -88,6 +105,8 @@ contract InsurancePolicy {
     function initiatePolicy(address policyHolder, uint256 id) public payable {
         Policy storage newPolicy = policiess[policyHolder][id];
         require(newPolicy.policyId > 0, "Go and generate Preium");
+        require(!newPolicy.isActive, "Policy already Active");
+
         require(
             newPolicy.premium == msg.value,
             "Premium not paid or incorrect amount"
@@ -95,14 +114,14 @@ contract InsurancePolicy {
         newPolicy.isActive = true;
         newPolicy.creationDate = block.timestamp;
         newPolicy.lastPaymentDate = block.timestamp;
-        newPolicy.terminationDate = block.timestamp + 365 days;
+        newPolicy.terminationDate = block.timestamp + 60;
         emit PolicyInitiated(policyHolder, block.timestamp);
     }
 
     function renewPolicy(address policyHolder, uint id) public payable {
         Policy storage policy = policiess[policyHolder][id];
         require(
-            block.timestamp >= policy.creationDate + 365 days,
+            block.timestamp >= policy.creationDate + 60,
             "Policy is not yet due for renewal"
         );
         require(
@@ -133,11 +152,51 @@ contract InsurancePolicy {
         uint id
     ) public returns (Policy memory policy_) {
         Policy storage policy = policiess[policyHolder][id];
-        if (policy.terminationDate > block.timestamp) {
+        require(policy.isActive, "Policy not yet Initiated");
+        if (block.timestamp > policy.terminationDate) {
             policy.isActive = false;
             policy.terminationReason = "Expired";
         }
 
         return policy;
+    }
+
+    function claimInsurance(
+        uint256 _policyId,
+        address _policyholder,
+        string memory _claimDetails,
+        string[] memory _image
+    ) public {
+        Claim storage newClaim = claims[_policyholder][_policyId];
+
+        ClaimId++;
+
+        newClaim.policyId = _policyId;
+        newClaim.policyholder = _policyholder;
+        newClaim.claimDetails = _claimDetails;
+        newClaim.image = _image;
+        newClaim.status = ClaimStatus.Processed;
+
+        Allclaims.push(newClaim);
+    }
+
+    function getAllClaim() public view returns (Claim[] memory) {
+        return Allclaims;
+    }
+
+    //Testing Function
+    function AAgeneratePremium(string[] memory safetyFeatures) public {
+        generatePremium(
+            msg.sender,
+            55,
+            1,
+            1,
+            "v4",
+            2,
+            1200,
+            safetyFeatures,
+            "ct1",
+            7000
+        );
     }
 }
