@@ -38,7 +38,7 @@ contract InsurancePolicy {
     mapping(address => uint) premiumsReceived;
     mapping(address => Policy) policies;
     mapping(address => uint) userpremium;
-    mapping(address => mapping(uint => Policy)) policiess;
+    mapping(address => mapping(uint => Policy)) policies;
     mapping(address => uint) policiesCount;
 
     event PolicyInitiated(address indexed policyHolder, uint time);
@@ -73,7 +73,7 @@ contract InsurancePolicy {
             vehicleValue
         );
         uint id = policiesCount[_policyHolder] + 1;
-        Policy storage newPolicy = policiess[_policyHolder][id];
+        Policy storage newPolicy = policies[_policyHolder][id];
         newPolicy.holder = _policyHolder;
         newPolicy.policyId = id;
         newPolicy.premium = premium;
@@ -86,7 +86,7 @@ contract InsurancePolicy {
     }
 
     function initiatePolicy(address policyHolder, uint256 id) public payable {
-        Policy storage newPolicy = policiess[policyHolder][id];
+        Policy storage newPolicy = policies[policyHolder][id];
         require(newPolicy.policyId > 0, "Go and generate Preium");
         require(
             newPolicy.premium == msg.value,
@@ -100,16 +100,30 @@ contract InsurancePolicy {
     }
 
     function renewPolicy(address policyHolder, uint id) public payable {
-        Policy storage policy = policiess[policyHolder][id];
+        Policy storage policy = policies[policyHolder][id];
         require(
             block.timestamp >= policy.creationDate + 365 days,
             "Policy is not yet due for renewal"
         );
+
+        uint newPremium = generatePremium(
+            policy.holder,
+            policy.driverAge,
+            policy.accidents,
+            policy.vehicleCategory,
+            policy.vehicleAge,
+            policy.mileage,
+            policy.safetyFeatures,
+            policy.coverageType,
+            policy.vehicleValue
+        );
+
         require(
-            msg.value == policy.premium,
+            msg.value == newPremium,
             "Incorrect premium paid for renewal"
         );
 
+        policy.premium = newPremium;
         policy.lastPaymentDate = block.timestamp;
         policy.isActive = true;
         emit PolicyRenewed(policyHolder, block.timestamp);
@@ -132,7 +146,7 @@ contract InsurancePolicy {
         address policyHolder,
         uint id
     ) public returns (Policy memory policy_) {
-        Policy storage policy = policiess[policyHolder][id];
+        Policy storage policy = policies[policyHolder][id];
         if (policy.terminationDate > block.timestamp) {
             policy.isActive = false;
             policy.terminationReason = "Expired";
