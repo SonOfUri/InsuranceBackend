@@ -136,8 +136,10 @@ contract InsurancePolicy {
         Policy storage policy = policies[policyHolder];
         require(policy.isActive, "Policy is already inactive");
 
+        uint refundAmount = (policy.premium * 80) / 100;
+        payable(policyHolder).transfer(refundAmount);
+
         policy.isActive = false;
-        policy.terminationDate = block.timestamp;
         policy.terminationReason = reason;
         emit PolicyTerminated(policyHolder, reason, block.timestamp);
     }
