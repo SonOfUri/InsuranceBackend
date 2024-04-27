@@ -141,6 +141,14 @@ contract AutomobileInsurancePolicy {
         return newPolicy.premium;
     }
 
+    //For Testing Function purposes//
+
+    function getGeneratePremium(address _policyHolder,uint256 _id) external view returns (Policy memory) {
+        Policy memory newPolicy = policiess[_policyHolder][_id];
+
+        return newPolicy;
+    }
+
     // Function to activate a policy after generating a premium
     // Function to activate a policy after generating a premium
     function initiatePolicy(address policyHolder, uint256 id) public payable {

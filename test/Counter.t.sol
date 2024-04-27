@@ -32,9 +32,11 @@ contract CounterTest is Test {
         safetyFeatures[0]=("");
         
         automobileInsurancePolicy.generatePremium(A,20,1,0,"v2",3,1,safetyFeatures,"",2000);
-uint premmium=automobilePremiumCalculator.calculateInsurancePremium( 20,1,0,"v2",3,1,safetyFeatures,"",2000);
+        automobilePremiumCalculator.calculateInsurancePremium( 20,1,0,"v2",3,1,safetyFeatures,"",2000);
 
-        automobileInsurancePolicy.Policy memory newPolicy = policiess[A][1];
+        AutomobileInsurancePolicy.Policy memory newPolicy = automobileInsurancePolicy.getGeneratePremium(A,1);
+
+
 
         
       
