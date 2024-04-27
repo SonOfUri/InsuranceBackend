@@ -12,6 +12,7 @@ interface IPropertyPremiumCalculator {
     ) external view returns (uint256);
 }
 
+
 contract AutomobileInsurancePolicy {
     // Instance of the premium calculator interface
     IPropertyPremiumCalculator public Calculator;
