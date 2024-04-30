@@ -13,7 +13,7 @@ interface IPropertyPremiumCalculator {
 }
 
 
-contract AutomobileInsurancePolicy {
+contract PropertyInsurancePolicy {
     // Instance of the premium calculator interface
     IPropertyPremiumCalculator public Calculator;
 
@@ -74,7 +74,7 @@ contract AutomobileInsurancePolicy {
     mapping(address => mapping(uint => Claim)) claims;
 
     // Incremental ID to track claims
-    uint256 ClaimId;
+    uint256 public  ClaimId;
 
     // Dynamic array to store all claims
     Claim[] public Allclaims;
@@ -132,6 +132,17 @@ contract AutomobileInsurancePolicy {
         // Increment the policy count for the holder
         policiesCount[_policyHolder]++;
         return newPolicy.premium;
+    }
+
+
+      //For Testing Function purposes//
+    function getGeneratePremium(
+        address _policyHolder,
+        uint256 _id
+    ) external view returns (Policy memory) {
+        Policy memory newPolicy = policiess[_policyHolder][_id];
+
+        return newPolicy;
     }
 
     // Function to activate a policy after generating a premium
@@ -296,6 +307,11 @@ contract AutomobileInsurancePolicy {
         return Allclaims;
     }
 
+        //gettingClaim
+    function getClaim(uint256 index) external view returns (Claim memory) {
+        return Allclaims[index];
+    }
+
     // ***************************** //
     // **** TIMOTHY's ADDITIONS **** //
     // ***************************** //
@@ -357,6 +373,14 @@ contract AutomobileInsurancePolicy {
         emit Debug("Vote Cast", uint(_vote));
 
         tallyVotes(_claimId);  // Tally votes after each vote is cast
+    }
+
+
+    function getVoteOnClaim(
+        uint256 _claimId,
+        address _holder
+    ) public view returns (Vote memory) {
+        return votes[_claimId][_holder];
     }
 
     function tallyVotes(uint _claimId) private {

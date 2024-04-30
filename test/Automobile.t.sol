@@ -5,7 +5,7 @@ import {Test, console} from "forge-std/Test.sol";
 import {AutomobileInsurancePolicy} from "../src/AutomobieInsurancePolicy.sol";
 import {AutomobilePremiumCalculator} from "../src/AutomobilePremiumCalculator.sol";
 
-contract CounterTest is Test {
+contract AutomobileTest is Test {
     AutomobileInsurancePolicy public automobileInsurancePolicy;
     AutomobilePremiumCalculator public automobilePremiumCalculator;
 
