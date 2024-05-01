@@ -26,7 +26,7 @@ contract PropertyPremiumCalculator {
 
 // Events for logging updates
     event LocationRiskMultiplierUpdated(string location, uint256 newMultiplier);
-    event TypeRiskMultiplierUpdated(string type, uint256 newMultiplier);
+    event TypeRiskMultiplierUpdated(string properyType, uint256 newMultiplier);
 event ProtectionDiscountUpdated(string protection, int256 newDiscount);
 event AgeAdjustmentUpdated(uint256 ageBracket, int256 newAdjustment);
 
@@ -76,9 +76,9 @@ emit LocationRiskMultiplierUpdated(location, multiplier);
 }
 
 // Public function to update property type risk multipliers
-function updateTypeRiskMultiplier(string memory type, uint256 multiplier) public onlyOwner {
-typeRiskMultipliers[type] = multiplier;
-emit TypeRiskMultiplierUpdated(type, multiplier);
+function updateTypeRiskMultiplier(string memory properyType, uint256 multiplier) public onlyOwner {
+typeRiskMultipliers[properyType] = multiplier;
+emit TypeRiskMultiplierUpdated(properyType, multiplier);
 }
 
 // Public function to update protection discounts
@@ -105,14 +105,14 @@ return totalDiscount;
 // Main calculation function to compute the insurance premium
 function calculateInsurancePremium(
 string memory location,
-string memory type,
+string memory properyType,
 uint256 age,
 string[] memory protections,
 uint256 propertyValue
 ) public view returns (uint256) {
 uint256 baseRate = 100; // Starting base rate for calculations
 uint256 locationRisk = locationRiskMultipliers[location];
-uint256 typeRisk = typeRiskMultipliers[type];
+uint256 typeRisk = typeRiskMultipliers[properyType];
 int256 protectionDiscount = calculateProtectionDiscount(protections);
 int256 ageAdjustment = age > 30 ? ageAdjustments[40] : ageAdjustments[age / 10 * 10]; // Bracketed age adjustment
 

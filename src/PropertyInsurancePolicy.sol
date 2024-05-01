@@ -12,7 +12,8 @@ interface IPropertyPremiumCalculator {
     ) external view returns (uint256);
 }
 
-contract AutomobileInsurancePolicy {
+
+contract PropertyInsurancePolicy {
     // Instance of the premium calculator interface
     IPropertyPremiumCalculator public Calculator;
 
@@ -73,7 +74,7 @@ contract AutomobileInsurancePolicy {
     mapping(address => mapping(uint => Claim)) claims;
 
     // Incremental ID to track claims
-    uint256 ClaimId;
+    uint256 public  ClaimId;
 
     // Dynamic array to store all claims
     Claim[] public Allclaims;
@@ -133,6 +134,9 @@ contract AutomobileInsurancePolicy {
         return newPolicy.premium;
     }
 
+
+
+
     // Function to activate a policy after generating a premium
     // Function to activate a policy after generating a premium
     function initiatePolicy(address policyHolder, uint256 id) public payable {
@@ -161,7 +165,7 @@ contract AutomobileInsurancePolicy {
         newPolicy.isActive = true;
         newPolicy.creationDate = block.timestamp;
         newPolicy.lastPaymentDate = block.timestamp;
-        newPolicy.terminationDate = block.timestamp + 60; // Assuming '60' should be a meaningful time period like one year in seconds
+        newPolicy.terminationDate = block.timestamp + 2 days; // Assuming '60' should be a meaningful time period like one year in seconds
         emit PolicyInitiated(policyHolder, block.timestamp);
     }
 
@@ -187,7 +191,7 @@ contract AutomobileInsurancePolicy {
         Policy storage policy = policiess[policyHolder][id];
         // Check that the policy is due for renewal
         require(
-            block.timestamp >= policy.creationDate + 60,
+            block.timestamp >= policy.creationDate + 2  days,
             "Policy is not yet due for renewal"
         );
         // Check that the correct premium amount is paid for renewal
@@ -295,6 +299,22 @@ contract AutomobileInsurancePolicy {
         return Allclaims;
     }
 
+        //gettingClaim
+    function getClaim(uint256 index) external view returns (Claim memory) {
+        return Allclaims[index];
+    }
+
+
+          //For Testing Function purposes//
+    function getGeneratePremium(
+        address _policyHolder,
+        uint256 _id
+    ) external view returns (Policy memory) {
+        Policy memory newPolicy = policiess[_policyHolder][_id];
+
+        return newPolicy;
+    }
+
     // ***************************** //
     // **** TIMOTHY's ADDITIONS **** //
     // ***************************** //
@@ -336,7 +356,7 @@ contract AutomobileInsurancePolicy {
     // Mapping for votes. Each claim ID maps to another mapping,
     // which maps each voter's address to a Vote struct.
     mapping(uint256 => mapping (address => Vote)) public votes;
-
+mapping (uint => address[]) claimVoters;
     // Event declarations to log significant actions and changes within the contract
     event VoteLogged(address voter, uint claimId, bool vote);
     event ClaimStatusChanged(uint claimId, ClaimStatus status, uint256 amount);
@@ -352,10 +372,18 @@ contract AutomobileInsurancePolicy {
 
         votes[_claimId][msg.sender].voted = true;
         votes[_claimId][msg.sender].option = _vote;
-
+        claimVoters[_claimId].push(msg.sender);
         emit Debug("Vote Cast", uint(_vote));
 
         tallyVotes(_claimId);  // Tally votes after each vote is cast
+    }
+
+
+    function getVoteOnClaim(
+        uint256 _claimId,
+        address _holder
+    ) public view returns (Vote memory) {
+        return votes[_claimId][_holder];
     }
 
     function tallyVotes(uint _claimId) private {
@@ -415,13 +443,13 @@ contract AutomobileInsurancePolicy {
         uint256 approvals = 0;
         uint256 rejections = 0;
         uint256 votesCounted = 0;
-
-        for (uint256 i = 0; i < totalVoters; i++) {
-            if (votes[claimId][voters[i]].voted) {
+address[]   memory   _claimVoters=claimVoters[claimId];
+        for (uint256 i = 0; i < _claimVoters.length; i++) {
+            if (votes[claimId][_claimVoters[i]].voted) {
                 votesCounted++;
-                if (votes[claimId][voters[i]].option == VoteOption.Approve) {
+                if (votes[claimId][_claimVoters[i]].option == VoteOption.Approve) {
                     approvals++;
-                } else if (votes[claimId][voters[i]].option == VoteOption.Reject) {
+                } else if (votes[claimId][_claimVoters[i]].option == VoteOption.Reject) {
                     rejections++;
                 }
             }
