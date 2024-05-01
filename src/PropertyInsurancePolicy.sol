@@ -353,7 +353,7 @@ contract PropertyInsurancePolicy {
     // Mapping for votes. Each claim ID maps to another mapping,
     // which maps each voter's address to a Vote struct.
     mapping(uint256 => mapping (address => Vote)) public votes;
-
+mapping (uint => address[]) claimVoters;
     // Event declarations to log significant actions and changes within the contract
     event VoteLogged(address voter, uint claimId, bool vote);
     event ClaimStatusChanged(uint claimId, ClaimStatus status, uint256 amount);
@@ -369,7 +369,7 @@ contract PropertyInsurancePolicy {
 
         votes[_claimId][msg.sender].voted = true;
         votes[_claimId][msg.sender].option = _vote;
-
+        claimVoters[_claimId].push(msg.sender);
         emit Debug("Vote Cast", uint(_vote));
 
         tallyVotes(_claimId);  // Tally votes after each vote is cast
@@ -440,13 +440,13 @@ contract PropertyInsurancePolicy {
         uint256 approvals = 0;
         uint256 rejections = 0;
         uint256 votesCounted = 0;
-
-        for (uint256 i = 0; i < totalVoters; i++) {
-            if (votes[claimId][voters[i]].voted) {
+address[]   memory   _claimVoters=claimVoters[claimId];
+        for (uint256 i = 0; i < _claimVoters.length; i++) {
+            if (votes[claimId][_claimVoters[i]].voted) {
                 votesCounted++;
-                if (votes[claimId][voters[i]].option == VoteOption.Approve) {
+                if (votes[claimId][_claimVoters[i]].option == VoteOption.Approve) {
                     approvals++;
-                } else if (votes[claimId][voters[i]].option == VoteOption.Reject) {
+                } else if (votes[claimId][_claimVoters[i]].option == VoteOption.Reject) {
                     rejections++;
                 }
             }
