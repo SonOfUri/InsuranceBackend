@@ -183,7 +183,7 @@ contract AutomobileInsurancePolicy {
         newPolicy.isActive = true;
         newPolicy.creationDate = block.timestamp;
         newPolicy.lastPaymentDate = block.timestamp;
-        newPolicy.terminationDate = block.timestamp + 60; // Assuming '60' should be a meaningful time period like one year in seconds
+        newPolicy.terminationDate = block.timestamp + 2 days; // Assuming '60' should be a meaningful time period like one year in seconds
         emit PolicyInitiated(policyHolder, block.timestamp);
     }
 
@@ -211,7 +211,7 @@ contract AutomobileInsurancePolicy {
         Policy storage policy = policiess[policyHolder][id];
         // Check that the policy is due for renewal
         require(
-            block.timestamp >= policy.creationDate + 60,
+            block.timestamp >= policy.creationDate + 2 days,
             "Policy is not yet due for renewal"
         );
         // Check that the correct premium amount is paid for renewal

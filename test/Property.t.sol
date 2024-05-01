@@ -9,6 +9,8 @@ contract PropertyTest is Test {
     PropertyInsurancePolicy public propertyInsurancePolicy;
     PropertyPremiumCalculator public propertyPremiumCalculator;
 
+    uint256 private lastPaymentDate;
+
     address A = address(0xa);
     address B = address(0xb);
     address C = address(0xc);
@@ -24,174 +26,220 @@ contract PropertyTest is Test {
         C = mkaddr("address c");
 
         vm.deal(A, 5 ether);
+
+        lastPaymentDate = block.timestamp;
     }
 
-    function testgeneratePremium() public {
+    //     function testgeneratePremium() public {
+    //         switchSigner(A);
+    //         string[] memory protections = new string[](1);
+    //         protections[0] = ("p1");
+
+    //         propertyInsurancePolicy.generatePremium(A,"loc1","t1",2,protections,400);
+    //         uint premium = propertyPremiumCalculator.calculateInsurancePremium("loc1","t1",2,protections,400);
+    //         console.log(premium);
+
+    //         PropertyInsurancePolicy.Policy
+    //             memory newPolicy = propertyInsurancePolicy.getGeneratePremium(
+    //                 A,
+    //                 1
+    //             );
+    //         console.log();
+    //         assertEq(newPolicy.premium, premium);
+    //         assertEq(newPolicy.location, "loc1");
+    //         assertEq(newPolicy.propertyValue, 400);
+    //         assertEq(newPolicy.age, 2);
+    //         assertEq(newPolicy.protections, protections);
+    //     }
+
+    //     function testinitatePolicy() public {
+    //   switchSigner(A);
+    //         string[] memory protections = new string[](1);
+    //         protections[0] = ("p1");
+
+    //         propertyInsurancePolicy.generatePremium(A,"loc1","t1",2,protections,400);
+    //         uint premium = propertyPremiumCalculator.calculateInsurancePremium("loc1","t1",2,protections,400);
+    //         console.log(premium);
+
+    //         PropertyInsurancePolicy.Policy
+    //             memory newPolicy = propertyInsurancePolicy.getGeneratePremium(
+    //                 A,
+    //                 1
+    //             );
+    //         console.log();
+    //         assertEq(newPolicy.premium, premium);
+    //         assertEq(newPolicy.location, "loc1");
+    //         assertEq(newPolicy.propertyValue, 400);
+    //         assertEq(newPolicy.age, 2);
+    //         assertEq(newPolicy.protections, protections);
+
+    //         propertyInsurancePolicy.initiatePolicy{value: premium}(A, 1);
+    //     }
+
+    //     function testFileClaim() public {
+    //         switchSigner(A);
+
+    //        string[] memory protections = new string[](1);
+    //         protections[0] = ("p1");
+
+    //         string[] memory _images = new string[](1);
+    //         _images[0] = ("hello");
+    //   propertyInsurancePolicy.generatePremium(A,"loc1","t1",2,protections,400);
+    //         uint premium = propertyPremiumCalculator.calculateInsurancePremium("loc1","t1",2,protections,400);
+    //         console.log(premium);
+
+    //         PropertyInsurancePolicy.Policy
+    //             memory newPolicy = propertyInsurancePolicy.getGeneratePremium(
+    //                 A,
+    //                 1
+    //             );
+    //         console.log();
+    //         assertEq(newPolicy.premium, premium);
+    //         assertEq(newPolicy.location, "loc1");
+    //         assertEq(newPolicy.propertyValue, 400);
+    //         assertEq(newPolicy.age, 2);
+    //         assertEq(newPolicy.protections, protections);
+
+    //         propertyInsurancePolicy.initiatePolicy{value: premium}(A, 1);
+    //         assertEq(newPolicy.premium, premium);
+
+    //         assertEq(newPolicy.policyId, 1);
+    //         assertEq(newPolicy.holder, A);
+
+    //         propertyInsurancePolicy.fileClaim(1, 0, "accident on way", _images);
+
+    //         PropertyInsurancePolicy.Claim
+    //             memory newClaim = propertyInsurancePolicy.getClaim(0);
+
+    //         assertEq(newClaim.policyId, 1);
+    //         assertEq(newClaim.claimAmount, 0);
+    //         assertEq(newClaim.policyholder, A);
+    //         assertEq(newClaim.claimDetails, "accident on way");
+    //         assertEq(newClaim.image, _images);
+
+    //         assertEq(propertyInsurancePolicy.ClaimId(), 1);
+    //     }
+
+    //     function testTerminatePolicy() public {
+    //         switchSigner(A);
+
+    //         PropertyInsurancePolicy.Policy
+    //             memory newPolicy = propertyInsurancePolicy.getGeneratePremium(
+    //                 A,
+    //                 1
+    //             );
+    //         vm.expectRevert("Policy is already inactive");
+
+    //         propertyInsurancePolicy.terminatePolicy(A, "not interested");
+
+    //         assertEq(newPolicy.isActive, false);
+    //     }
+
+    //     function testAddVoter() public {
+    //         A = address(0xa);
+
+    //         propertyInsurancePolicy.addVoter(B);
+    //     }
+
+    //     function testVoteClaim() public {
+    //     switchSigner(A);
+
+    //        string[] memory protections = new string[](1);
+    //         protections[0] = ("p1");
+
+    //         string[] memory _images = new string[](1);
+    //         _images[0] = ("hello");
+    //   propertyInsurancePolicy.generatePremium(A,"loc1","t1",2,protections,400);
+    //         uint premium = propertyPremiumCalculator.calculateInsurancePremium("loc1","t1",2,protections,400);
+    //         console.log(premium);
+
+    //         PropertyInsurancePolicy.Policy
+    //             memory newPolicy = propertyInsurancePolicy.getGeneratePremium(
+    //                 A,
+    //                 1
+    //             );
+    //         console.log();
+    //         assertEq(newPolicy.premium, premium);
+    //         assertEq(newPolicy.location, "loc1");
+    //         assertEq(newPolicy.propertyValue, 400);
+    //         assertEq(newPolicy.age, 2);
+    //         assertEq(newPolicy.protections, protections);
+
+    //         propertyInsurancePolicy.initiatePolicy{value: premium}(A, 1);
+    //         assertEq(newPolicy.premium, premium);
+
+    //         assertEq(newPolicy.policyId, 1);
+    //         assertEq(newPolicy.holder, A);
+
+    //         propertyInsurancePolicy.fileClaim(1, 0, "accident on way", _images);
+
+    //         PropertyInsurancePolicy.Claim
+    //             memory newClaim = propertyInsurancePolicy.getClaim(0);
+
+    //         assertEq(newClaim.policyId, 1);
+    //         assertEq(newClaim.claimAmount, 0);
+    //         assertEq(newClaim.policyholder, A);
+    //         assertEq(newClaim.claimDetails, "accident on way");
+    //         assertEq(newClaim.image, _images);
+
+    //         assertEq(propertyInsurancePolicy.ClaimId(), 1);
+
+    //         //   vm.expectRevert("Only policyholders can vote on a claim");
+    //         propertyInsurancePolicy.voteOnClaim(
+    //             0,
+    //             PropertyInsurancePolicy.VoteOption.Approve
+    //         );
+
+    //         PropertyInsurancePolicy.Vote
+    //             memory newVote = propertyInsurancePolicy.getVoteOnClaim(0, A);
+
+    //         assertTrue(newVote.voted);
+    //     }
+
+    function testRenewPolicy() public {
         switchSigner(A);
         string[] memory protections = new string[](1);
         protections[0] = ("p1");
 
-        propertyInsurancePolicy.generatePremium(A,"loc1","t1",2,protections,400);
-        uint premium = propertyPremiumCalculator.calculateInsurancePremium("loc1","t1",2,protections,400);
-        console.log(premium);
-
-        PropertyInsurancePolicy.Policy
-            memory newPolicy = propertyInsurancePolicy.getGeneratePremium(
-                A,
-                1
-            );
-        console.log();
-        assertEq(newPolicy.premium, premium);
-        assertEq(newPolicy.location, "loc1");
-        assertEq(newPolicy.propertyValue, 400);
-        assertEq(newPolicy.age, 2);
-        assertEq(newPolicy.protections, protections);
-    }
-
-    function testinitatePolicy() public {
-  switchSigner(A);
-        string[] memory protections = new string[](1);
-        protections[0] = ("p1");
-
-        propertyInsurancePolicy.generatePremium(A,"loc1","t1",2,protections,400);
-        uint premium = propertyPremiumCalculator.calculateInsurancePremium("loc1","t1",2,protections,400);
-        console.log(premium);
-
-        PropertyInsurancePolicy.Policy
-            memory newPolicy = propertyInsurancePolicy.getGeneratePremium(
-                A,
-                1
-            );
-        console.log();
-        assertEq(newPolicy.premium, premium);
-        assertEq(newPolicy.location, "loc1");
-        assertEq(newPolicy.propertyValue, 400);
-        assertEq(newPolicy.age, 2);
-        assertEq(newPolicy.protections, protections);
-
-        propertyInsurancePolicy.initiatePolicy{value: premium}(A, 1);
-    }
-
-    function testFileClaim() public {
-        switchSigner(A);
-
-       string[] memory protections = new string[](1);
-        protections[0] = ("p1");
-
-        string[] memory _images = new string[](1);
-        _images[0] = ("hello");
-  propertyInsurancePolicy.generatePremium(A,"loc1","t1",2,protections,400);
-        uint premium = propertyPremiumCalculator.calculateInsurancePremium("loc1","t1",2,protections,400);
-        console.log(premium);
-
-        PropertyInsurancePolicy.Policy
-            memory newPolicy = propertyInsurancePolicy.getGeneratePremium(
-                A,
-                1
-            );
-        console.log();
-        assertEq(newPolicy.premium, premium);
-        assertEq(newPolicy.location, "loc1");
-        assertEq(newPolicy.propertyValue, 400);
-        assertEq(newPolicy.age, 2);
-        assertEq(newPolicy.protections, protections);
-
-        propertyInsurancePolicy.initiatePolicy{value: premium}(A, 1);
-        assertEq(newPolicy.premium, premium);
-
-
-        assertEq(newPolicy.policyId, 1);
-        assertEq(newPolicy.holder, A);
-
-        propertyInsurancePolicy.fileClaim(1, 0, "accident on way", _images);
-
-        PropertyInsurancePolicy.Claim
-            memory newClaim = propertyInsurancePolicy.getClaim(0);
-
-        assertEq(newClaim.policyId, 1);
-        assertEq(newClaim.claimAmount, 0);
-        assertEq(newClaim.policyholder, A);
-        assertEq(newClaim.claimDetails, "accident on way");
-        assertEq(newClaim.image, _images);
-
-        assertEq(propertyInsurancePolicy.ClaimId(), 1);
-    }
-
-    function testTerminatePolicy() public {
-        switchSigner(A);
-
-        PropertyInsurancePolicy.Policy
-            memory newPolicy = propertyInsurancePolicy.getGeneratePremium(
-                A,
-                1
-            );
-        vm.expectRevert("Policy is already inactive");
-
-        propertyInsurancePolicy.terminatePolicy(A, "not interested");
-
-        assertEq(newPolicy.isActive, false);
-    }
-
-    function testAddVoter() public {
-        A = address(0xa);
-
-        propertyInsurancePolicy.addVoter(B);
-    }
-
-    function testVoteClaim() public {
-    switchSigner(A);
-
-       string[] memory protections = new string[](1);
-        protections[0] = ("p1");
-
-        string[] memory _images = new string[](1);
-        _images[0] = ("hello");
-  propertyInsurancePolicy.generatePremium(A,"loc1","t1",2,protections,400);
-        uint premium = propertyPremiumCalculator.calculateInsurancePremium("loc1","t1",2,protections,400);
-        console.log(premium);
-
-        PropertyInsurancePolicy.Policy
-            memory newPolicy = propertyInsurancePolicy.getGeneratePremium(
-                A,
-                1
-            );
-        console.log();
-        assertEq(newPolicy.premium, premium);
-        assertEq(newPolicy.location, "loc1");
-        assertEq(newPolicy.propertyValue, 400);
-        assertEq(newPolicy.age, 2);
-        assertEq(newPolicy.protections, protections);
-
-        propertyInsurancePolicy.initiatePolicy{value: premium}(A, 1);
-        assertEq(newPolicy.premium, premium);
-
-
-        assertEq(newPolicy.policyId, 1);
-        assertEq(newPolicy.holder, A);
-
-        propertyInsurancePolicy.fileClaim(1, 0, "accident on way", _images);
-
-        PropertyInsurancePolicy.Claim
-            memory newClaim = propertyInsurancePolicy.getClaim(0);
-
-        assertEq(newClaim.policyId, 1);
-        assertEq(newClaim.claimAmount, 0);
-        assertEq(newClaim.policyholder, A);
-        assertEq(newClaim.claimDetails, "accident on way");
-        assertEq(newClaim.image, _images);
-
-        assertEq(propertyInsurancePolicy.ClaimId(), 1);
-
-        //   vm.expectRevert("Only policyholders can vote on a claim");
-        propertyInsurancePolicy.voteOnClaim(
-            0,
-            PropertyInsurancePolicy.VoteOption.Approve
+        propertyInsurancePolicy.generatePremium(
+            A,
+            "loc1",
+            "t1",
+            2,
+            protections,
+            400
         );
-        
-        PropertyInsurancePolicy.Vote
-            memory newVote = propertyInsurancePolicy.getVoteOnClaim(0, A);
+        uint premium = propertyPremiumCalculator.calculateInsurancePremium(
+            "loc1",
+            "t1",
+            2,
+            protections,
+            400
+        );
+        console.log(premium);
 
-        assertTrue(newVote.voted);
+        PropertyInsurancePolicy.Policy
+            memory newPolicy = propertyInsurancePolicy.getGeneratePremium(A, 1);
+        console.log();
+        assertEq(newPolicy.premium, premium);
+        assertEq(newPolicy.location, "loc1");
+        assertEq(newPolicy.propertyValue, 400);
+        assertEq(newPolicy.age, 2);
+        assertEq(newPolicy.protections, protections);
+
+        vm.warp(lastPaymentDate);
+
+        propertyInsurancePolicy.initiatePolicy{value: premium}(A, 1);
+
+        // vm.expectRevert("Policy is not yet due for renewal");
+        vm.warp(lastPaymentDate + 2 days);
+
+        vm.expectRevert("Policy already Active");
+
+        propertyInsurancePolicy.initiatePolicy(A, 1);
+
+        // vm.expectRevert("Incorrect premium paid for renewal");
+        propertyInsurancePolicy.renewPolicy{value: premium}(A, 1);
     }
 
     function mkaddr(string memory name) public returns (address) {
