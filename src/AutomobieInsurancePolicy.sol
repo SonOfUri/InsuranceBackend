@@ -339,7 +339,6 @@ contract AutomobileInsurancePolicy {
     }
 
     // ***************************** //
-    // **** TIMOTHY's ADDITIONS **** //
     // ***************************** //
     // An array to store the Ethereum addresses of all voters. The array holds all authorised voters.
     address[] public voters;
