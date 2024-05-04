@@ -56,6 +56,7 @@ contract AutomobileInsurancePolicy {
         uint terminationDate;
         string terminationReason;
         ClaimStatus status;
+        string imageurl;
     }
 
     // Mapping to track if an address holds a policy
@@ -115,7 +116,8 @@ contract AutomobileInsurancePolicy {
         uint256 mileage,
         string[] memory safetyFeatures,
         string memory coverageType,
-        uint256 vehicleValue
+        uint256 vehicleValue,
+        string memory imageUrl
     ) public returns (uint premium_) {
         // Calculate premium using the calculator contract
         uint premium = Calculator.calculateInsurancePremium(
@@ -139,6 +141,7 @@ contract AutomobileInsurancePolicy {
         newPolicy.vehicleCategory = vehicleCategory;
         newPolicy.vehicleValue = vehicleValue;
         newPolicy.coverageDetails = coverageType;
+        newPolicy.imageurl = imageUrl;
 
         // Increment the policy count for the holder
         policiesCount[_policyHolder]++;
