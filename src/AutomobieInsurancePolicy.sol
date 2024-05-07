@@ -105,9 +105,11 @@ contract AutomobileInsurancePolicy {
         uint time
     );
 
+    // Event to emit premium information
+    event PremiumGenerated(address indexed policyHolder, uint policyId, uint premium);
+
     // Function to generate and record a premium for a new policy application
     function generatePremium(
-        address _policyHolder,
         uint256 driverAge,
         uint256 accidents,
         uint256 violations,
@@ -131,11 +133,11 @@ contract AutomobileInsurancePolicy {
             coverageType,
             vehicleValue
         );
-        // Generate a new policy ID
-        uint id = policiesCount[_policyHolder] + 1;
-        // Create a new policy and store it in the nested mapping
-        Policy storage newPolicy = policiess[_policyHolder][id];
-        newPolicy.holder = _policyHolder;
+        // Generate a new policy ID using msg.sender
+        uint id = policiesCount[msg.sender] + 1;
+        // Create a new policy and store it in the nested mapping using msg.sender
+        Policy storage newPolicy = policiess[msg.sender][id];
+        newPolicy.holder = msg.sender; // Use msg.sender as the policy holder
         newPolicy.policyId = id;
         newPolicy.premium = premium;
         newPolicy.vehicleCategory = vehicleCategory;
@@ -143,10 +145,17 @@ contract AutomobileInsurancePolicy {
         newPolicy.coverageDetails = coverageType;
         newPolicy.imageurl = imageUrl;
 
-        // Increment the policy count for the holder
-        policiesCount[_policyHolder]++;
+        // Increment the policy count for the holder (msg.sender)
+        policiesCount[msg.sender]++;
+
+        // Emit the premium generated event
+        emit PremiumGenerated(msg.sender, id, premium);
+
         return newPolicy.premium;
+
+
     }
+
 
     //For Testing Function purposes//
     function getGeneratePremium(
@@ -236,8 +245,8 @@ contract AutomobileInsurancePolicy {
         string memory reason
     ) public {
         Policy storage policy = policiess[policyHolder][
-            policiesCount[policyHolder]
-        ];
+                        policiesCount[policyHolder]
+            ];
         // Ensure the policy is currently active
         require(policy.isActive, "Policy is already inactive");
 
@@ -464,8 +473,8 @@ contract AutomobileInsurancePolicy {
         } else {
             // If claim is rejected and it affects the policy status
             Policy storage policy = policiess[claim.policyholder][
-                claim.policyId
-            ];
+                            claim.policyId
+                ];
             policy.isActive = false; // Optionally deactivate the policy on certain conditions
             updateVoterStatus(claim.policyholder); // Update voter status based on active policies
         }
@@ -481,9 +490,9 @@ contract AutomobileInsurancePolicy {
     function getVoteCounts(
         uint256 claimId
     )
-        public
-        view
-        returns (uint256 approveCount, uint256 rejectCount, uint256 totalVotes)
+    public
+    view
+    returns (uint256 approveCount, uint256 rejectCount, uint256 totalVotes)
     {
         require(claimId < ClaimId, "Claim ID does not exist."); // Ensure the claim ID is valid
 
