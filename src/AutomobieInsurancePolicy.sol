@@ -99,7 +99,11 @@ contract AutomobileInsurancePolicy {
     // Event declarations for policy lifecycle management
     event PolicyInitiated(address indexed policyHolder, uint time);
     event PolicyRenewed(address indexed policyHolder, uint time);
-    event PolicyTerminated(address indexed policyHolder, string reason, uint time);
+    event PolicyTerminated(
+        address indexed policyHolder,
+        string reason,
+        uint time
+    );
 
     // Event to emit premium information
     event PremiumGenerated(address indexed policyHolder, uint policyId, uint premium);
