@@ -135,13 +135,13 @@ contract PropertyInsurancePolicy {
         newPolicy.imageurl = imageUrl;
 
         // Increment the policy count for the holder
-        policiesCount[_policyHolder]++;
+        policiesCount[msg.sender]++;
 
         // Emit the premium generated event
         emit PremiumGenerated(msg.sender, id, premium);
 
 
-    return newPolicy.premium;
+        return newPolicy.premium;
     }
 
 
@@ -309,13 +309,13 @@ contract PropertyInsurancePolicy {
         return Allclaims;
     }
 
-        //gettingClaim
+    //gettingClaim
     function getClaim(uint256 index) external view returns (Claim memory) {
         return Allclaims[index];
     }
 
 
-          //For Testing Function purposes//
+    //For Testing Function purposes//
     function getGeneratePremium(
         address _policyHolder,
         uint256 _id
@@ -366,7 +366,7 @@ contract PropertyInsurancePolicy {
     // Mapping for votes. Each claim ID maps to another mapping,
     // which maps each voter's address to a Vote struct.
     mapping(uint256 => mapping (address => Vote)) public votes;
-mapping (uint => address[]) claimVoters;
+    mapping (uint => address[]) claimVoters;
     // Event declarations to log significant actions and changes within the contract
     event VoteLogged(address voter, uint claimId, bool vote);
     event ClaimStatusChanged(uint claimId, ClaimStatus status, uint256 amount);
@@ -453,7 +453,7 @@ mapping (uint => address[]) claimVoters;
         uint256 approvals = 0;
         uint256 rejections = 0;
         uint256 votesCounted = 0;
-address[]   memory   _claimVoters=claimVoters[claimId];
+        address[]   memory   _claimVoters=claimVoters[claimId];
         for (uint256 i = 0; i < _claimVoters.length; i++) {
             if (votes[claimId][_claimVoters[i]].voted) {
                 votesCounted++;
