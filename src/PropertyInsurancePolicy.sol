@@ -55,6 +55,7 @@ contract PropertyInsurancePolicy {
         uint terminationDate;
         string terminationReason;
         ClaimStatus status;
+        string imageurl;
     }
 
     // Mapping to track if an address holds a policy
@@ -99,14 +100,17 @@ contract PropertyInsurancePolicy {
     event PolicyRenewed(address indexed policyHolder, uint time);
     event PolicyTerminated(address indexed policyHolder, string reason, uint time);
 
+    // Event to emit premium information
+    event PremiumGenerated(address indexed policyHolder, uint policyId, uint premium);
+
     // Function to generate and record a premium for a new policy application
     function generatePremium(
-        address _policyHolder,
         string memory location,
         string memory propertyType,
         uint256 age,
         string[] memory protections,
-        uint256 propertyValue
+        uint256 propertyValue,
+        string memory imageUrl
     ) public returns (uint premium_) {
         // Calculate premium using the calculator contract
         uint premium = Calculator.calculateInsurancePremium(
@@ -117,10 +121,10 @@ contract PropertyInsurancePolicy {
             propertyValue
         );
         // Generate a new policy ID
-        uint id = policiesCount[_policyHolder] + 1;
+        uint id = policiesCount[msg.sender] + 1;
         // Create a new policy and store it in the nested mapping
-        Policy storage newPolicy = policiess[_policyHolder][id];
-        newPolicy.holder = _policyHolder;
+        Policy storage newPolicy = policiess[msg.sender][id];
+        newPolicy.holder = msg.sender; // Use msg.sender as the policy holder
         newPolicy.policyId = id;
         newPolicy.premium = premium;
         newPolicy.location = location;
@@ -128,10 +132,16 @@ contract PropertyInsurancePolicy {
         newPolicy.age = age;
         newPolicy.protections = protections;
         newPolicy.propertyValue = propertyValue;
+        newPolicy.imageurl = imageUrl;
 
         // Increment the policy count for the holder
         policiesCount[_policyHolder]++;
-        return newPolicy.premium;
+
+        // Emit the premium generated event
+        emit PremiumGenerated(msg.sender, id, premium);
+
+
+    return newPolicy.premium;
     }
 
 
